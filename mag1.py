@@ -41,6 +41,9 @@ magazyn_lista = [item.strip() for item in magazyn_input_str.split(',') if item.s
 
 st.info(f"Obecnie w pamięci: {magazyn_lista}")
 
+# Inicjalizacja zmiennych do przechowania wyników operacji
+nowy_magazyn = None
+poprzedni_magazyn_str = ", ".join(magazyn_lista) # Zapisujemy poprzedni stan jako ciąg znaków
 
 # 2. Dodawanie Towaru
 st.header("2. Dodaj Nowy Towar")
@@ -49,6 +52,7 @@ with st.form("form_dodawanie"):
     przycisk_dodaj = st.form_submit_button("Dodaj i Pokaż Nowy Stan")
 
     if przycisk_dodaj:
+        # Zapisujemy nowy stan do zmiennej globalnej
         nowy_magazyn = dodaj_towar(magazyn_lista, nowy_towar)
 
 
@@ -59,14 +63,22 @@ with st.form("form_usuwanie"):
     przycisk_usun = st.form_submit_button("Usuń i Pokaż Nowy Stan")
 
     if przycisk_usun:
+        # Zapisujemy nowy stan do zmiennej globalnej
         nowy_magazyn = usun_towar(magazyn_lista, towar_do_usuniecia)
 
 
 # 4. Wynik Działania
 st.header("4. Wynik (Nowy Stan Magazynu)")
 
-if 'nowy_magazyn' in locals():
-    st.code(", ".join(nowy_magazyn))
-    st.success(f"Nowa liczba pozycji: **{len(nowy_magazyn)}**")
+# Sprawdzamy, czy w trakcie interakcji zmienna 'nowy_magazyn' została nadpisana
+if nowy_magazyn is not None:
+    st.subheader("Poprzedni stan:")
+    st.code(poprzedni_magazyn_str)
+    
+    st.subheader("Nowy stan (do skopiowania na górę):")
+    nowy_magazyn_str = ", ".join(nowy_magazyn)
+    st.code(nowy_magazyn_str)
+    
+    st.success(f"Nowa liczba pozycji: **{len(nowy_magazyn)}** (Wcześniej: {len(magazyn_lista)})")
 else:
-    st.info("Oczekiwanie na akcję dodania/usunięcia. Pamiętaj, aby skopiować wynik i wkleić go na górze!")
+    st.info("Oczekiwanie na akcję dodania/usunięcia. Po wykonaniu operacji zobaczysz poprzedni i nowy stan magazynu.")
